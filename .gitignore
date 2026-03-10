@@ -1,0 +1,6 @@
+# OS and editor noise
+Thumbs.db
+.DS_Store
+
+# Local tooling
+.vscode/
