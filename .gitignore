@@ -4,3 +4,8 @@ Thumbs.db
 
 # Local tooling
 .vscode/
+
+# Local secrets
+.env
+.env.*
+!.env.example

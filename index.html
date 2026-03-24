@@ -1,264 +1,336 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>jaries23 | Developer Portfolio</title>
-  <meta name="description" content="Developer-focused portfolio for jaries23 on GitHub Pages.">
+  <title>Gallverse | Supabase Community</title>
+  <meta
+    name="description"
+    content="GitHub Pages community frontend backed by Supabase galleries, posts, comments, and auth."
+  >
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=Public+Sans:wght@400;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;700&display=swap"
+    rel="stylesheet"
+  >
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="page-shell">
-    <header class="topbar">
-      <div class="brand-wrap">
-        <a class="brand" href="#top">jaries23.dev</a>
-        <p class="brand-caption">frontend / ui / shipping</p>
+  <div class="page-noise" aria-hidden="true"></div>
+
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="brand-block">
+        <a class="brand-mark" href="#top">gallverse</a>
+        <div class="brand-copy">
+          <p class="kicker">GitHub Pages x Supabase</p>
+          <p class="brand-note">gallery feed, threads, votes, and auth in one static frontend</p>
+        </div>
       </div>
 
-      <div class="topbar-status">
-        <span class="status-dot" aria-hidden="true"></span>
-        Open for portfolio-grade web builds
-      </div>
+      <label class="search-field" for="searchInput">
+        <span>Search posts</span>
+        <input id="searchInput" type="search" placeholder="title, body, gallery">
+      </label>
 
-      <nav class="topnav" aria-label="Primary">
-        <a href="#work">Work</a>
-        <a href="#stack">Stack</a>
-        <a href="#notes">Notes</a>
-        <a href="#contact">Contact</a>
-      </nav>
+      <div class="header-actions">
+        <button class="ghost-button" id="refreshButton" type="button">Refresh</button>
+        <button class="ghost-button" id="jumpThreadButton" type="button">Thread</button>
+        <button class="solid-button" id="signOutButton" type="button" hidden>Sign out</button>
+      </div>
     </header>
 
-    <main id="top">
-      <section class="hero">
-        <div class="hero-copy">
-          <div class="hero-meta">
-            <p class="eyebrow">README.md</p>
-            <span class="mini-pill">Static / Frontend / Deploy</span>
-          </div>
-
-          <h1>개발 흐름이 보이는 포트폴리오, 바로 배포 가능한 개인 사이트.</h1>
-          <p class="intro">
-            화면은 깔끔하게, 정보는 빠르게 읽히게, 배포는 바로 이어지게 만드는 쪽을 선호합니다.
-            이 페이지는 작업물 소개와 연락 경로를 한 번에 전달하는 개발자형 포트폴리오 홈입니다.
-          </p>
-
-          <div class="hero-actions">
-            <a class="button button-primary" href="#work">대표 작업 보기</a>
-            <a class="button button-secondary" href="https://github.com/jaries23" target="_blank" rel="noreferrer">GitHub 프로필</a>
-          </div>
-
-          <div class="hero-console" aria-label="Portfolio terminal preview">
-            <div class="console-top">
-              <span></span>
-              <span></span>
-              <span></span>
-              <p>portfolio.sh</p>
-            </div>
-            <pre><code>$ define the problem
-$ build a readable interface
-$ deploy with clean git history</code></pre>
-          </div>
+    <section class="masthead" id="top">
+      <div class="masthead-copy">
+        <p class="kicker">Community Runtime</p>
+        <h1>Static hosting on GitHub Pages, live community data from Supabase.</h1>
+        <p class="masthead-text">
+          Public visitors can browse galleries and threads. Signed-in users can create galleries,
+          publish posts, write comments, vote, and update their own profile without a separate app server.
+        </p>
+        <div class="masthead-actions">
+          <button class="solid-button" id="focusComposerButton" type="button">Write a post</button>
+          <button class="ghost-button" id="focusAuthButton" type="button">Open auth panel</button>
         </div>
+      </div>
 
-        <aside class="hero-panel">
-          <article class="signal-card signal-primary">
-            <div class="signal-head">
-              <p class="card-label">Developer Feed</p>
-              <span class="vote-chip">▲ 128</span>
+      <div class="masthead-rail">
+        <div class="metric-card">
+          <span class="metric-label">Galleries</span>
+          <strong id="galleriesCount">0</strong>
+          <p>public and member-only spaces</p>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">Posts</span>
+          <strong id="postsCount">0</strong>
+          <p>live feed rendered from Supabase</p>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">Session</span>
+          <strong id="sessionState">guest</strong>
+          <p id="sessionHint">browse public galleries or sign in to write</p>
+        </div>
+      </div>
+    </section>
+
+    <main class="dashboard">
+      <aside class="column column-left">
+        <section class="panel panel-hero">
+          <div class="section-top">
+            <div>
+              <p class="kicker">Launch Notes</p>
+              <h2>Gallery-first community shape</h2>
             </div>
-            <h2>기능보다 먼저 구조를 세우고, 구조보다 먼저 목적을 정리합니다.</h2>
-            <p>
-              설명이 길어지기보다 바로 이해되는 화면 구성을 만들고, 수정하기 쉬운 정적 구조로 정리해 배포합니다.
-            </p>
-          </article>
-
-          <div class="feed-list">
-            <article class="feed-item">
-              <p class="feed-score">/build</p>
-              <div>
-                <h3>명확한 정보 구조</h3>
-                <p>첫 화면에서 역할, 프로젝트, 연락 포인트가 바로 보이게 설계합니다.</p>
-              </div>
+            <span class="pill">static frontend</span>
+          </div>
+          <div class="callout-grid">
+            <article class="callout-card">
+              <span class="callout-tag">feed</span>
+              <h3>Public browsing</h3>
+              <p>Visitors can read public galleries, open threads, and inspect score-driven ranking.</p>
             </article>
-
-            <article class="feed-item">
-              <p class="feed-score">/ship</p>
-              <div>
-                <h3>빠른 정적 배포</h3>
-                <p>GitHub Pages 같은 가벼운 배포 흐름을 기준으로 유지보수 부담을 낮춥니다.</p>
-              </div>
+            <article class="callout-card">
+              <span class="callout-tag">auth</span>
+              <h3>Direct sign-in</h3>
+              <p>Email and password auth runs straight against Supabase from the browser.</p>
             </article>
-
-            <article class="feed-item">
-              <p class="feed-score">/care</p>
-              <div>
-                <h3>읽기 쉬운 코드</h3>
-                <p>나중에 프로젝트 설명이나 링크를 바꾸기 쉬운 형태를 우선합니다.</p>
-              </div>
+            <article class="callout-card">
+              <span class="callout-tag">mod</span>
+              <h3>RLS-backed writes</h3>
+              <p>Posts, comments, votes, and reports stay inside the row-level policies you already added.</p>
             </article>
           </div>
-        </aside>
+        </section>
+
+        <section class="panel">
+          <div class="section-top">
+            <div>
+              <p class="kicker">Galleries</p>
+              <h2 id="galleryHeading">All public feeds</h2>
+            </div>
+            <button class="ghost-button compact-button" id="clearGalleryButton" type="button">All feed</button>
+          </div>
+
+          <form class="stacked-form" id="galleryForm">
+            <div class="field-grid">
+              <label class="field">
+                <span>Name</span>
+                <input id="galleryName" maxlength="80" placeholder="Night Shift Board" required type="text">
+              </label>
+              <label class="field">
+                <span>Slug</span>
+                <input id="gallerySlug" maxlength="32" placeholder="night_shift" required type="text">
+              </label>
+            </div>
+
+            <label class="field">
+              <span>Description</span>
+              <textarea id="galleryDescription" maxlength="280" placeholder="What belongs in this gallery?"></textarea>
+            </label>
+
+            <div class="field-grid">
+              <label class="field">
+                <span>Visibility</span>
+                <select id="galleryVisibility">
+                  <option value="public">public</option>
+                  <option value="restricted">restricted</option>
+                  <option value="private">private</option>
+                </select>
+              </label>
+              <label class="checkbox-field">
+                <input id="galleryNsfw" type="checkbox">
+                <span>Mark as NSFW</span>
+              </label>
+            </div>
+
+            <button class="solid-button" type="submit">Create gallery</button>
+          </form>
+
+          <div class="gallery-list" id="galleryList"></div>
+        </section>
+      </aside>
+
+      <section class="column column-main">
+        <section class="panel composer-panel">
+          <div class="section-top">
+            <div>
+              <p class="kicker">Composer</p>
+              <h2>Create a post</h2>
+            </div>
+            <span class="pill" id="composerState">sign in required</span>
+          </div>
+
+          <form class="stacked-form" id="postForm">
+            <div class="field-grid">
+              <label class="field">
+                <span>Gallery</span>
+                <select id="postGallerySelect"></select>
+              </label>
+              <label class="field">
+                <span>Type</span>
+                <select id="postType">
+                  <option value="text">text</option>
+                  <option value="link">link</option>
+                  <option value="image">image</option>
+                </select>
+              </label>
+            </div>
+
+            <label class="field">
+              <span>Title</span>
+              <input id="postTitle" maxlength="300" placeholder="Ship notes for this week" required type="text">
+            </label>
+
+            <label class="field">
+              <span>Link URL</span>
+              <input id="postUrl" placeholder="https://example.com" type="url">
+            </label>
+
+            <label class="field">
+              <span>Body</span>
+              <textarea id="postBody" maxlength="10000" placeholder="Write the thread body here"></textarea>
+            </label>
+
+            <label class="checkbox-field">
+              <input id="postNsfw" type="checkbox">
+              <span>Mark post as NSFW</span>
+            </label>
+
+            <button class="solid-button" type="submit">Publish post</button>
+          </form>
+        </section>
+
+        <section class="panel">
+          <div class="section-top">
+            <div>
+              <p class="kicker">Feed</p>
+              <h2 id="feedHeading">Live thread feed</h2>
+            </div>
+            <div class="sort-group" id="sortGroup">
+              <button class="sort-button is-active" data-sort="hot" type="button">Hot</button>
+              <button class="sort-button" data-sort="new" type="button">New</button>
+              <button class="sort-button" data-sort="top" type="button">Top</button>
+            </div>
+          </div>
+
+          <div class="feed-summary" id="feedSummary">
+            Choose a gallery filter or browse across all public posts.
+          </div>
+
+          <div class="post-list" id="postList"></div>
+        </section>
       </section>
 
-      <section class="section" id="work">
-        <div class="section-heading">
-          <p class="eyebrow">Pinned Projects</p>
-          <h2>대표 작업을 카드형 보드로 정리</h2>
-          <p>
-            포털 메인처럼 정보가 빠르게 읽히고, 커뮤니티 카드처럼 핵심만 남는 구성을 적용했습니다.
-            실제 프로젝트 링크와 설명만 바꾸면 바로 포트폴리오로 쓸 수 있습니다.
-          </p>
-        </div>
-
-        <div class="project-grid">
-          <article class="project-card project-featured">
-            <div class="project-header">
-              <div>
-                <p class="project-kicker">Pinned 01</p>
-                <h3>Personal Portfolio Home</h3>
-              </div>
-              <span class="project-score">+42</span>
+      <aside class="column column-right">
+        <section class="panel">
+          <div class="section-top">
+            <div>
+              <p class="kicker">Account</p>
+              <h2 id="authHeading">Guest mode</h2>
             </div>
-            <p>
-              당신이 어떤 작업을 하고 어떤 방식으로 결과물을 만드는지 첫 화면에서 전달하는 개인 메인 페이지입니다.
-            </p>
-            <div class="project-footer">
-              <ul class="tag-list" aria-label="Project tags">
-                <li>GitHub Pages</li>
-                <li>Static Site</li>
-                <li>Portfolio</li>
-              </ul>
-              <a class="text-link" href="https://github.com/jaries23/jaries23.github.io" target="_blank" rel="noreferrer">Repo 보기</a>
+            <span class="pill" id="authStateBadge">disconnected</span>
+          </div>
+
+          <div class="profile-card" id="profileCard">
+            <strong>No session</strong>
+            <p>Public reads work without login. Sign in to create galleries, posts, comments, votes, and saved items.</p>
+          </div>
+
+          <div class="auth-tabs" id="authModeTabs">
+            <button class="sort-button is-active" data-auth-mode="signin" type="button">Sign in</button>
+            <button class="sort-button" data-auth-mode="signup" type="button">Sign up</button>
+          </div>
+
+          <form class="stacked-form" id="authForm">
+            <label class="field">
+              <span>Email</span>
+              <input id="authEmail" autocomplete="email" placeholder="you@example.com" required type="email">
+            </label>
+
+            <label class="field">
+              <span>Password</span>
+              <input id="authPassword" autocomplete="current-password" minlength="6" required type="password">
+            </label>
+
+            <label class="field" id="displayNameField">
+              <span>Display name</span>
+              <input id="authDisplayName" maxlength="60" placeholder="Night Owl" type="text">
+            </label>
+
+            <button class="solid-button" id="authSubmitButton" type="submit">Sign in</button>
+          </form>
+
+          <form class="stacked-form" id="profileForm">
+            <label class="field">
+              <span>Username</span>
+              <input id="profileUsername" maxlength="24" placeholder="night_owl" type="text">
+            </label>
+
+            <label class="field">
+              <span>Display name</span>
+              <input id="profileDisplayName" maxlength="60" placeholder="Night Owl" type="text">
+            </label>
+
+            <label class="field">
+              <span>Bio</span>
+              <textarea id="profileBio" maxlength="240" placeholder="Short intro shown on posts and comments"></textarea>
+            </label>
+
+            <button class="ghost-button" type="submit">Update profile</button>
+          </form>
+        </section>
+
+        <section class="panel thread-panel" id="threadPanel">
+          <div class="section-top">
+            <div>
+              <p class="kicker">Thread</p>
+              <h2 id="threadHeading">Select a post</h2>
             </div>
-          </article>
+            <button class="ghost-button compact-button" id="clearThreadButton" type="button">Clear</button>
+          </div>
 
-          <article class="project-card">
-            <div class="project-header">
-              <div>
-                <p class="project-kicker">Pinned 02</p>
-                <h3>서비스형 웹 프로젝트</h3>
-              </div>
-              <span class="project-score">+28</span>
+          <div class="thread-state" id="threadState">
+            Open a feed card to inspect the full post body and comments.
+          </div>
+
+          <div class="comment-list" id="commentList"></div>
+
+          <form class="stacked-form" id="commentForm">
+            <label class="field">
+              <span id="commentTargetLabel">Comment</span>
+              <textarea id="commentBody" maxlength="10000" placeholder="Write a reply for the selected thread"></textarea>
+            </label>
+
+            <div class="inline-actions">
+              <button class="ghost-button compact-button" id="cancelReplyButton" type="button">Cancel reply</button>
+              <button class="solid-button" type="submit">Publish comment</button>
             </div>
-            <p>
-              가장 자신 있는 웹앱, 랜딩 페이지, 관리 화면 작업을 이 자리에 두고 역할과 결과 중심으로 설명하면 좋습니다.
-            </p>
-            <div class="project-footer">
-              <ul class="tag-list" aria-label="Project tags">
-                <li>Web App</li>
-                <li>UI</li>
-              </ul>
-              <a class="text-link" href="https://github.com/jaries23" target="_blank" rel="noreferrer">링크 연결</a>
+          </form>
+        </section>
+
+        <section class="panel status-panel">
+          <div class="section-top">
+            <div>
+              <p class="kicker">Deploy</p>
+              <h2>Runtime wiring</h2>
             </div>
-          </article>
+            <span class="pill" id="configBadge">config.js</span>
+          </div>
 
-          <article class="project-card">
-            <div class="project-header">
-              <div>
-                <p class="project-kicker">Pinned 03</p>
-                <h3>자동화 또는 내부 도구</h3>
-              </div>
-              <span class="project-score">+17</span>
-            </div>
-            <p>
-              반복 작업 자동화, 스크립트, 데이터 정리처럼 개발자다운 문제 해결 감각을 보여주는 작업을 배치하기 좋습니다.
-            </p>
-            <div class="project-footer">
-              <ul class="tag-list" aria-label="Project tags">
-                <li>Automation</li>
-                <li>Tooling</li>
-              </ul>
-              <a class="text-link" href="https://github.com/jaries23" target="_blank" rel="noreferrer">작업 링크</a>
-            </div>
-          </article>
-        </div>
-      </section>
+          <ul class="deploy-list">
+            <li>Populate `config.js` at build time with `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY`.</li>
+            <li>Keep `service_role` out of GitHub Pages. Use Edge Functions for admin-only work.</li>
+            <li>Run the SQL schema in Supabase before publishing the frontend.</li>
+          </ul>
 
-      <section class="section split-section" id="stack">
-        <div class="section-heading">
-          <p class="eyebrow">Stack Board</p>
-          <h2>기술보다 결과가 먼저 보이도록 정리</h2>
-          <p>
-            개발자 포트폴리오는 기술 이름 나열보다 무엇을 빠르게 만들 수 있는지 보여줄 때 더 설득력이 있습니다.
-          </p>
-        </div>
-
-        <div class="split-grid">
-          <article class="detail-card">
-            <div class="detail-head">
-              <p class="card-label">Core Stack</p>
-              <span class="mini-pill mini-pill-accent">Ready</span>
-            </div>
-            <ul class="pill-list">
-              <li>HTML</li>
-              <li>CSS</li>
-              <li>JavaScript</li>
-              <li>React</li>
-              <li>GitHub Pages</li>
-              <li>Git</li>
-            </ul>
-          </article>
-
-          <article class="detail-card">
-            <div class="detail-head">
-              <p class="card-label">Workflow</p>
-              <span class="mini-pill">Step-by-step</span>
-            </div>
-            <ol class="process-list">
-              <li>문제를 먼저 짧게 정의합니다.</li>
-              <li>읽기 쉬운 구조를 먼저 만듭니다.</li>
-              <li>배포 가능한 상태로 정리합니다.</li>
-            </ol>
-          </article>
-        </div>
-      </section>
-
-      <section class="section notes-section" id="notes">
-        <div class="section-heading">
-          <p class="eyebrow">Build Notes</p>
-          <h2>이 페이지를 실사용 포트폴리오로 완성하는 방법</h2>
-        </div>
-
-        <div class="notes-grid">
-          <article class="note-card">
-            <p class="card-label">Note 01</p>
-            <h3>소개 문구 교체</h3>
-            <p>히어로 문장을 본인 역할에 맞게 바꾸면 사이트 성격이 바로 정리됩니다.</p>
-          </article>
-
-          <article class="note-card">
-            <p class="card-label">Note 02</p>
-            <h3>실제 프로젝트 연결</h3>
-            <p>프로젝트 카드에 실링크와 결과 중심 설명을 넣으면 완성도가 빠르게 올라갑니다.</p>
-          </article>
-
-          <article class="note-card">
-            <p class="card-label">Note 03</p>
-            <h3>연락처만 실정보로 수정</h3>
-            <p>이메일, 링크드인, 노션, 블로그 중 실제로 확인하는 채널만 남기는 편이 좋습니다.</p>
-          </article>
-        </div>
-      </section>
-
-      <section class="contact-banner" id="contact">
-        <div class="contact-copy">
-          <p class="eyebrow">Contact / Links</p>
-          <h2>작업 문의나 협업 제안을 받는 엔드포인트.</h2>
-          <p>
-            아래 링크를 실제 정보로 바꾸면 이 페이지는 소개 페이지를 넘어 바로 사용할 수 있는 개인 허브가 됩니다.
-          </p>
-        </div>
-
-        <div class="contact-links">
-          <a href="https://github.com/jaries23" target="_blank" rel="noreferrer">GitHub</a>
-          <a href="mailto:hello@example.com">hello@example.com</a>
-          <a href="https://www.linkedin.com/" target="_blank" rel="noreferrer">LinkedIn</a>
-        </div>
-      </section>
+          <div class="status-message" id="statusMessage">Waiting for Supabase configuration.</div>
+        </section>
+      </aside>
     </main>
   </div>
+
+  <script src="config.js"></script>
+  <script type="module" src="app.js"></script>
 </body>
 </html>
